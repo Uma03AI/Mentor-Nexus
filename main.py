@@ -34,6 +34,15 @@ async def serve_ai():
 async def serve_interview():
     return FileResponse("static/interview-chatbot.html")
 
+@app.get("/challanges/")
+async def serve_interview():
+    return FileResponse("static/challanges.html")
+
+@app.get("/profile/")
+async def serve_interview():
+    return FileResponse("static/profile.html")
+
+
 
 # Create user
 @app.post("/users/")
