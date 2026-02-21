@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillDuel Arena</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'display': ['Space Grotesk', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .gradient-animate {
+      background-size: 200% 200%;
+      animation: gradient-shift 8s ease infinite;
+    }
+    .glass-card {
+      background: rgba(30, 30, 46, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-slate-950 font-display text-slate-100 overflow-auto">
+  <div id="app-wrapper" class="w-full h-full">
+   <!-- Main Container -->
+   <div class="w-full min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 gradient-animate">
+    <!-- Navigation Bar (Simulated - matches existing site) -->
+    <nav class="w-full px-6 py-4 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-sm">
+     <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-8">
+       <span class="text-xl font-bold text-indigo-400">SkillHub</span>
+       <div class="hidden md:flex items-center gap-6 text-sm text-slate-400">
+        <a href="#" class="text-indigo-400 font-medium">SkillDuel Arena</a>
+       </div>
+      </div>
+      <div class="flex items-center gap-4">
+       <span class="text-sm text-slate-400">Welcome back!</span>
+       <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-medium">
+        U
+       </div>
+      </div>
+     </div>
+    </nav><!-- Arena Content -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+     <!-- View: Welcome -->
+     <div id="view-welcome" class="space-y-8">
+      <!-- Hero Section -->
+      <div class="text-center py-12 relative">
+       <div class="absolute inset-0 flex items-center justify-center opacity-20">
+        <div class="w-96 h-96 bg-indigo-500 rounded-full blur-3xl"></div>
+       </div>
+       <div class="relative">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-sm mb-6">
+         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Live Arena
+        </div>
+        <h1 id="arena-title" class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">SkillDuel Arena</h1>
+        <p id="arena-tagline" class="text-lg sm:text-xl text-slate-400 mb-8">Challenge. Compete. Conquer.</p><button id="enter-arena-btn" onclick="showChallengeSelection()" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 animate-pulse-glow"> ⚔️ Enter Arena </button>
+       </div>
+      </div><!-- Stats Row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+       <div class="glass-card rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-indigo-400" id="stat-duels">
+         0
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+         Total Duels
+        </div>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-green-400" id="stat-wins">
+         0
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+         Victories
+        </div>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-amber-400" id="stat-streak">
+         0
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+         Win Streak
+        </div>
+       </div>
+       <div class="glass-card rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-purple-400" id="stat-badges">
+         0
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+         Badges
+        </div>
+       </div>
+      </div><!-- Leaderboard -->
+      <div class="glass-card rounded-2xl p-6">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold flex items-center gap-2">🏆 Top 10 Leaderboard</h2><span class="text-xs text-slate-500">Updated live</span>
+       </div>
+       <div id="leaderboard" class="space-y-2">
+        <div class="text-center py-8 text-slate-500">
+         <p>No duels completed yet. Be the first!</p>
+        </div>
+       </div>
+      </div><!-- Recent Duels -->
+      <div class="glass-card rounded-2xl p-6">
+       <h2 class="text-xl font-bold mb-6 flex items-center gap-2">📜 Your Duel History</h2>
+       <div id="duel-history" class="space-y-3">
+        <div class="text-center py-8 text-slate-500">
+         <p>No duel history yet. Start your first duel!</p>
+        </div>
+       </div>
+      </div>
+     </div><!-- View: Challenge Selection -->
+     <div id="view-selection" class="hidden space-y-8">
+      <button onclick="showWelcome()" class="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+       </svg> Back to Arena </button> <!-- Step 1: Challenge Type -->
+      <div id="step-1" class="space-y-6">
+       <div class="text-center">
+        <span class="text-sm text-indigo-400 font-medium">Step 1 of 3</span>
+        <h2 class="text-2xl font-bold mt-2">Choose Your Battle Type</h2>
+       </div>
+       <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <button onclick="selectChallengeType('coding')" class="challenge-type-btn glass-card rounded-2xl p-8 text-center hover:border-indigo-500/50 transition-all group" data-type="coding">
+         <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">
+          💻
+         </div><h3 class="text-xl font-bold mb-2">Coding Duel</h3><p class="text-sm text-slate-400">Battle with algorithms, data structures &amp; code</p></button> <button onclick="selectChallengeType('design')" class="challenge-type-btn glass-card rounded-2xl p-8 text-center hover:border-purple-500/50 transition-all group" data-type="design">
+         <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">
+          🎨
+         </div><h3 class="text-xl font-bold mb-2">Design Duel</h3><p class="text-sm text-slate-400">Compete in UI, logos &amp; creative challenges</p></button>
+       </div>
+      </div><!-- Step 2: Topic Selection -->
+      <div id="step-2" class="hidden space-y-6">
+       <div class="text-center">
+        <span class="text-sm text-indigo-400 font-medium">Step 2 of 3</span>
+        <h2 class="text-2xl font-bold mt-2">Select Challenge Topic</h2>
+       </div>
+       <div class="max-w-md mx-auto">
+        <div class="glass-card rounded-xl p-1">
+         <select id="topic-select" onchange="selectTopic(this.value)" class="w-full bg-transparent px-4 py-4 text-lg focus:outline-none cursor-pointer"> <option value="" class="bg-slate-800">-- Select a topic --</option> </select>
+        </div>
+       </div>
+      </div><!-- Step 3: Opponent Selection -->
+      <div id="step-3" class="hidden space-y-6">
+       <div class="text-center">
+        <span class="text-sm text-indigo-400 font-medium">Step 3 of 3</span>
+        <h2 class="text-2xl font-bold mt-2">Choose Your Opponent</h2>
+       </div>
+       <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <button onclick="selectOpponent('random')" class="opponent-btn glass-card rounded-2xl p-8 text-center hover:border-orange-500/50 transition-all group">
+         <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">
+          🔥
+         </div><h3 class="text-xl font-bold mb-2">Random Opponent</h3><p class="text-sm text-slate-400">Get matched with a worthy challenger</p></button> <button onclick="selectOpponent('friend')" class="opponent-btn glass-card rounded-2xl p-8 text-center hover:border-cyan-500/50 transition-all group">
+         <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">
+          🎯
+         </div><h3 class="text-xl font-bold mb-2">Challenge a Friend</h3><p class="text-sm text-slate-400">Send a direct challenge</p></button>
+       </div><!-- Friend Input -->
+       <div id="friend-input" class="hidden max-w-md mx-auto">
+        <div class="glass-card rounded-xl p-4">
+         <label class="text-sm text-slate-400 block mb-2">Enter friend's username or email</label> <input type="text" id="friend-username" placeholder="username@email.com" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors"> <button onclick="startMatchmaking()" class="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 rounded-lg font-semibold hover:from-cyan-500 hover:to-indigo-500 transition-all"> Send Challenge </button>
+        </div>
+       </div>
+      </div>
+     </div><!-- View: Matchmaking -->
+     <div id="view-matchmaking" class="hidden">
+      <div class="text-center py-20">
+       <div class="relative inline-block">
+        <div class="w-32 h-32 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+         <span class="text-4xl animate-float">⚔️</span>
+        </div>
+       </div>
+       <h2 class="text-2xl font-bold mt-8 mb-2">Finding Your Opponent...</h2>
+       <p class="text-slate-400" id="matchmaking-status">Searching for worthy challengers</p>
+       <div class="mt-8 flex items-center justify-center gap-4">
+        <div class="glass-card rounded-xl px-6 py-4">
+         <div class="text-2xl mb-1">
+          👤
+         </div>
+         <div class="text-sm text-slate-400">
+          You
+         </div>
+        </div>
+        <div class="text-2xl text-indigo-400 animate-pulse">
+         VS
+        </div>
+        <div class="glass-card rounded-xl px-6 py-4">
+         <div class="text-2xl mb-1 animate-pulse">
+          ❓
+         </div>
+         <div class="text-sm text-slate-400">
+          Opponent
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- View: Duel Arena -->
+     <div id="view-duel" class="hidden space-y-4">
+      <!-- Duel Header -->
+      <div class="glass-card rounded-xl p-4">
+       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+         <div class="text-center">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold">
+           U
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+           You
+          </div>
+         </div>
+         <div class="text-2xl font-bold text-amber-400">
+          VS
+         </div>
+         <div class="text-center">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center text-lg font-bold" id="opponent-avatar">
+           O
+          </div>
+          <div class="text-xs text-slate-400 mt-1" id="opponent-name-display">
+           Opponent
+          </div>
+         </div>
+        </div><!-- Timer -->
+        <div class="flex items-center gap-3">
+         <div class="text-center">
+          <div id="timer-display" class="text-4xl font-mono font-bold text-red-400">
+           10:00
+          </div>
+          <div class="text-xs text-slate-400">
+           Time Remaining
+          </div>
+         </div>
+        </div>
+        <div class="text-center">
+         <div class="text-sm text-slate-400" id="duel-topic-display">
+          Topic
+         </div>
+         <div class="text-xs px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full mt-1" id="duel-type-display">
+          Type
+         </div>
+        </div>
+       </div>
+      </div><!-- Main Duel Area -->
+      <div class="grid lg:grid-cols-4 gap-4">
+       <!-- Editor/Canvas Area -->
+       <div class="lg:col-span-3 glass-card rounded-xl overflow-hidden">
+        <!-- Coding Editor -->
+        <div id="coding-editor" class="h-full">
+         <div class="flex items-center justify-between px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+          <div class="flex items-center gap-2">
+           <div class="w-3 h-3 rounded-full bg-red-500"></div>
+           <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+           <div class="w-3 h-3 rounded-full bg-green-500"></div><span class="text-sm text-slate-400 ml-2">solution.js</span>
+          </div>
+          <div class="flex items-center gap-2">
+           <button onclick="runCode()" class="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-sm font-medium transition-colors"> ▶ Run </button> <button onclick="submitSolution()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-sm font-medium transition-colors"> Submit </button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div id="challenge-prompt" class="mb-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+           <h3 class="font-bold text-indigo-400 mb-2">Challenge:</h3>
+           <p class="text-sm text-slate-300" id="challenge-text">Loading challenge...</p>
+          </div><textarea id="code-input" class="w-full h-64 bg-slate-900 font-mono text-sm p-4 rounded-lg border border-slate-700 focus:outline-none focus:border-indigo-500 resize-none" placeholder="// Write your solution here..." spellcheck="false"></textarea>
+          <div id="code-output" class="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-700 min-h-[80px]">
+           <div class="text-xs text-slate-500 mb-2">
+            Output:
+           </div>
+           <pre class="text-sm text-green-400 font-mono" id="output-text">Ready to run...</pre>
+          </div>
+         </div>
+        </div><!-- Design Canvas -->
+        <div id="design-canvas" class="hidden h-full">
+         <div class="flex items-center justify-between px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+          <span class="text-sm text-slate-400">Design Canvas</span>
+          <div class="flex items-center gap-2">
+           <button class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs transition-colors" onclick="clearCanvas()">Clear</button> <button onclick="submitSolution()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-sm font-medium transition-colors"> Submit Design </button>
+          </div>
+         </div>
+         <div class="p-4">
+          <div id="design-prompt" class="mb-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+           <h3 class="font-bold text-purple-400 mb-2">Design Brief:</h3>
+           <p class="text-sm text-slate-300" id="design-text">Loading brief...</p>
+          </div><!-- Simple Drawing Tools -->
+          <div class="flex items-center gap-4 mb-4">
+           <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400">Color:</label> <input type="color" id="brush-color" value="#6366f1" class="w-8 h-8 rounded cursor-pointer">
+           </div>
+           <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400">Size:</label> <input type="range" id="brush-size" min="2" max="50" value="5" class="w-24">
+           </div>
+           <div class="flex items-center gap-2">
+            <button onclick="setTool('brush')" id="tool-brush" class="px-3 py-1 bg-indigo-600 rounded text-xs">Brush</button> <button onclick="setTool('eraser')" id="tool-eraser" class="px-3 py-1 bg-slate-700 rounded text-xs">Eraser</button>
+           </div>
+          </div>
+          <canvas id="drawing-canvas" class="w-full bg-white rounded-lg cursor-crosshair" style="height: 400px;"></canvas>
+         </div>
+        </div>
+       </div><!-- AI Judge Panel -->
+       <div class="glass-card rounded-xl p-4">
+        <h3 class="font-bold text-amber-400 mb-4 flex items-center gap-2">🤖 AI Judge</h3>
+        <div class="space-y-4">
+         <div class="text-center py-4">
+          <div class="text-4xl mb-2 animate-pulse">
+           👁️
+          </div>
+          <p class="text-xs text-slate-400">Analyzing in real-time...</p>
+         </div>
+         <div class="space-y-3">
+          <div>
+           <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Logic</span> <span class="text-indigo-400" id="score-logic">--</span>
+           </div>
+           <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="bar-logic" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+           </div>
+          </div>
+          <div>
+           <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Speed</span> <span class="text-green-400" id="score-speed">--</span>
+           </div>
+           <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="bar-speed" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
+           </div>
+          </div>
+          <div>
+           <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Creativity</span> <span class="text-purple-400" id="score-creativity">--</span>
+           </div>
+           <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="bar-creativity" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+           </div>
+          </div>
+          <div>
+           <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-400">Optimization</span> <span class="text-amber-400" id="score-optimization">--</span>
+           </div>
+           <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="bar-optimization" class="h-full bg-amber-500 transition-all duration-500" style="width: 0%"></div>
+           </div>
+          </div>
+         </div>
+         <div class="pt-4 border-t border-slate-700/50">
+          <div class="text-center">
+           <div class="text-xs text-slate-400 mb-1">
+            Current Score
+           </div>
+           <div class="text-3xl font-bold text-white" id="current-score">
+            0
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- View: Results -->
+     <div id="view-results" class="hidden">
+      <div class="max-w-2xl mx-auto space-y-8 py-8">
+       <!-- Result Header -->
+       <div class="text-center">
+        <div id="result-icon" class="text-7xl mb-4 animate-float">
+         🏆
+        </div>
+        <h2 id="result-title" class="text-3xl font-bold mb-2">Victory!</h2>
+        <p id="result-subtitle" class="text-slate-400">You dominated the arena!</p>
+       </div><!-- Score Comparison -->
+       <div class="glass-card rounded-2xl p-6">
+        <div class="flex items-center justify-around">
+         <div class="text-center">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-bold mx-auto mb-2">
+           U
+          </div>
+          <div class="text-sm text-slate-400">
+           You
+          </div>
+          <div class="text-3xl font-bold text-indigo-400 mt-1" id="result-user-score">
+           0
+          </div>
+         </div>
+         <div class="text-4xl text-slate-600">
+          VS
+         </div>
+         <div class="text-center">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center text-2xl font-bold mx-auto mb-2" id="result-opponent-avatar">
+           O
+          </div>
+          <div class="text-sm text-slate-400" id="result-opponent-name">
+           Opponent
+          </div>
+          <div class="text-3xl font-bold text-rose-400 mt-1" id="result-opponent-score">
+           0
+          </div>
+         </div>
+        </div>
+       </div><!-- Score Breakdown -->
+       <div class="glass-card rounded-2xl p-6">
+        <h3 class="font-bold mb-4">📊 Score Breakdown</h3>
+        <div class="grid grid-cols-2 gap-4">
+         <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-indigo-400" id="breakdown-logic">
+           0
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+           Logic
+          </div>
+         </div>
+         <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-green-400" id="breakdown-speed">
+           0
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+           Speed
+          </div>
+         </div>
+         <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-purple-400" id="breakdown-creativity">
+           0
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+           Creativity
+          </div>
+         </div>
+         <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-amber-400" id="breakdown-optimization">
+           0
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+           Optimization
+          </div>
+         </div>
+        </div>
+       </div><!-- Badge Earned -->
+       <div id="badge-section" class="glass-card rounded-2xl p-6 text-center hidden">
+        <h3 class="font-bold mb-4">🎖️ Badge Earned!</h3>
+        <div class="inline-block p-6 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 rounded-2xl border border-amber-500/30">
+         <div class="text-5xl mb-2" id="badge-icon">
+          🥇
+         </div>
+         <div class="font-bold text-amber-400" id="badge-name">
+          Champion
+         </div>
+        </div>
+       </div><!-- AI Suggestions -->
+       <div class="glass-card rounded-2xl p-6">
+        <h3 class="font-bold mb-4 flex items-center gap-2">🤖 AI Improvement Suggestions</h3>
+        <ul id="ai-suggestions" class="space-y-2 text-sm text-slate-300">
+         <li class="flex items-start gap-2"><span class="text-indigo-400">•</span> <span>Loading suggestions...</span></li>
+        </ul>
+       </div><!-- Actions -->
+       <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button onclick="showChallengeSelection()" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl font-semibold transition-all"> 🔄 Play Again </button> <button onclick="showWelcome()" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold transition-all"> 🏠 Back to Arena </button>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div>
+  <script>
+    // ========== Configuration ==========
+    const defaultConfig = {
+      arena_title: 'SkillDuel Arena',
+      tagline: 'Challenge. Compete. Conquer.',
+      start_button_text: 'Enter Arena',
+      background_color: '#020617',
+      surface_color: '#1e1e2e',
+      text_color: '#f1f5f9',
+      primary_action_color: '#6366f1',
+      secondary_action_color: '#8b5cf6',
+      font_family: 'Space Grotesk',
+      font_size: 16
+    };
+
+    let config = { ...defaultConfig };
+    let duelHistory = [];
+    let currentDuel = {
+      type: null,
+      topic: null,
+      opponentType: null,
+      opponentName: null
+    };
+    let timerInterval = null;
+    let timeRemaining = 600;
+    let currentScores = { logic: 0, speed: 0, creativity: 0, optimization: 0 };
+
+    // ========== Topics Data ==========
+    const topics = {
+      coding: [
+        { value: 'data-structures', label: 'Data Structures', icon: '🗂️' },
+        { value: 'algorithms', label: 'Algorithms', icon: '⚡' },
+        { value: 'web-development', label: 'Web Development', icon: '🌐' },
+        { value: 'debugging', label: 'Debugging Challenge', icon: '🐛' }
+      ],
+      design: [
+        { value: 'ui-design', label: 'UI Design', icon: '📱' },
+        { value: 'logo-design', label: 'Logo Design', icon: '✨' },
+        { value: 'landing-page', label: 'Landing Page Design', icon: '🖥️' },
+        { value: 'poster-design', label: 'Poster Design', icon: '🎨' }
+      ]
+    };
+
+    // ========== Challenge Prompts ==========
+    const challenges = {
+      coding: {
+        'data-structures': [
+          'Implement a function that reverses a linked list in-place.',
+          'Create a stack that supports push, pop, and getMin in O(1) time.',
+          'Implement a binary search tree with insert and search methods.'
+        ],
+        'algorithms': [
+          'Write a function to find the longest palindromic substring.',
+          'Implement merge sort algorithm.',
+          'Find the shortest path in a weighted graph using Dijkstra\'s algorithm.'
+        ],
+        'web-development': [
+          'Create a debounce function for handling rapid user input.',
+          'Implement a simple event emitter class.',
+          'Build a function that deeply clones a nested object.'
+        ],
+        'debugging': [
+          'Fix the memory leak in this recursive function: function leak(n) { if(n>0) return leak(n-1) + new Array(1000); }',
+          'Debug: Why does [1,2,3].map(parseInt) return [1, NaN, NaN]?',
+          'Fix: const obj = {a:1}; const copy = obj; copy.a = 2; Why does obj.a also change?'
+        ]
+      },
+      design: {
+        'ui-design': [
+          'Design a modern mobile banking app dashboard.',
+          'Create a minimalist music player interface.',
+          'Design a fitness tracking app home screen.'
+        ],
+        'logo-design': [
+          'Design a logo for an eco-friendly coffee brand called "GreenBean".',
+          'Create a tech startup logo for "NexusAI".',
+          'Design a vintage-style bakery logo for "Golden Crust".'
+        ],
+        'landing-page': [
+          'Design a landing page for a productivity SaaS tool.',
+          'Create a landing page for an online learning platform.',
+          'Design a portfolio landing page for a photographer.'
+        ],
+        'poster-design': [
+          'Design a movie poster for a sci-fi thriller.',
+          'Create an event poster for a music festival.',
+          'Design a minimalist poster promoting sustainability.'
+        ]
+      }
+    };
+
+    // ========== Badge System ==========
+    const badges = {
+      'first-win': { icon: '🎯', name: 'First Blood', description: 'Win your first duel' },
+      'speed-demon': { icon: '⚡', name: 'Speed Demon', description: 'Submit in under 5 minutes' },
+      'perfect-score': { icon: '💎', name: 'Perfectionist', description: 'Score 90+ points' },
+      'streak-3': { icon: '🔥', name: 'Hot Streak', description: '3 wins in a row' },
+      'code-master': { icon: '💻', name: 'Code Master', description: 'Win 5 coding duels' },
+      'design-guru': { icon: '🎨', name: 'Design Guru', description: 'Win 5 design duels' }
+    };
+
+    // ========== AI Suggestions ==========
+    const aiSuggestionTemplates = {
+      coding: {
+        low: [
+          'Focus on understanding the problem before coding',
+          'Practice breaking down complex problems into smaller steps',
+          'Review basic data structure operations',
+          'Study time and space complexity analysis'
+        ],
+        medium: [
+          'Consider edge cases more carefully',
+          'Look into more efficient algorithms for this problem type',
+          'Practice writing cleaner, more readable code',
+          'Work on optimizing your solution after getting it working'
+        ],
+        high: [
+          'Great job! Try solving similar problems with constraints',
+          'Explore alternative approaches for comparison',
+          'Consider teaching this concept to solidify understanding',
+          'Challenge yourself with harder variations'
+        ]
+      },
+      design: {
+        low: [
+          'Study color theory and contrast principles',
+          'Practice with simpler compositions first',
+          'Look at design inspiration for this category',
+          'Focus on alignment and spacing consistency'
+        ],
+        medium: [
+          'Work on creating stronger visual hierarchy',
+          'Experiment with typography pairings',
+          'Consider user flow and interaction patterns',
+          'Add more intentional whitespace'
+        ],
+        high: [
+          'Excellent work! Push boundaries with micro-interactions',
+          'Explore animation to enhance user experience',
+          'Consider accessibility in your designs',
+          'Build a case study around your design decisions'
+        ]
+      }
+    };
+
+    // ========== Opponent Names ==========
+    const opponentNames = [
+      'CodeNinja42', 'PixelMaster', 'AlgoWizard', 'DesignDragon', 'ByteHunter',
+      'CreativeStorm', 'LogicLord', 'ArtisticAce', 'DataDancer', 'StyleSavant'
+    ];
+
+    // ========== Data SDK Handler ==========
+    const dataHandler = {
+      onDataChanged(data) {
+        duelHistory = data;
+        updateStats();
+        renderLeaderboard();
+        renderDuelHistory();
+      }
+    };
+
+    // ========== Initialize ==========
+    async function initialize() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: applyConfig,
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              { get: () => cfg.background_color || defaultConfig.background_color, set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+              { get: () => cfg.surface_color || defaultConfig.surface_color, set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+              { get: () => cfg.text_color || defaultConfig.text_color, set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+              { get: () => cfg.primary_action_color || defaultConfig.primary_action_color, set: (v) => { cfg.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); } },
+              { get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { cfg.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => cfg.font_family || defaultConfig.font_family,
+              set: (v) => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+            },
+            fontSizeable: {
+              get: () => cfg.font_size || defaultConfig.font_size,
+              set: (v) => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+            }
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['arena_title', cfg.arena_title || defaultConfig.arena_title],
+            ['tagline', cfg.tagline || defaultConfig.tagline],
+            ['start_button_text', cfg.start_button_text || defaultConfig.start_button_text]
+          ])
+        });
+        config = window.elementSdk.config || defaultConfig;
+      }
+
+      applyConfig(config);
+      initCanvas();
+    }
+
+    async function applyConfig(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      document.getElementById('arena-title').textContent = config.arena_title;
+      document.getElementById('arena-tagline').textContent = config.tagline;
+      document.getElementById('enter-arena-btn').innerHTML = `⚔️ ${config.start_button_text}`;
+      
+      document.body.style.fontFamily = `${config.font_family}, sans-serif`;
+    }
+
+    // ========== View Navigation ==========
+    function hideAllViews() {
+      document.getElementById('view-welcome').classList.add('hidden');
+      document.getElementById('view-selection').classList.add('hidden');
+      document.getElementById('view-matchmaking').classList.add('hidden');
+      document.getElementById('view-duel').classList.add('hidden');
+      document.getElementById('view-results').classList.add('hidden');
+    }
+
+    function showWelcome() {
+      hideAllViews();
+      document.getElementById('view-welcome').classList.remove('hidden');
+      resetDuelState();
+    }
+
+    function showChallengeSelection() {
+      hideAllViews();
+      document.getElementById('view-selection').classList.remove('hidden');
+      document.getElementById('step-1').classList.remove('hidden');
+      document.getElementById('step-2').classList.add('hidden');
+      document.getElementById('step-3').classList.add('hidden');
+      resetDuelState();
+    }
+
+    function resetDuelState() {
+      currentDuel = { type: null, topic: null, opponentType: null, opponentName: null };
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timeRemaining = 600;
+      currentScores = { logic: 0, speed: 0, creativity: 0, optimization: 0 };
+    }
+
+    // ========== Challenge Selection ==========
+    function selectChallengeType(type) {
+      currentDuel.type = type;
+      
+      document.querySelectorAll('.challenge-type-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-indigo-500');
+      });
+      document.querySelector(`[data-type="${type}"]`).classList.add('ring-2', 'ring-indigo-500');
+      
+      const select = document.getElementById('topic-select');
+      select.innerHTML = '<option value="" class="bg-slate-800">-- Select a topic --</option>';
+      topics[type].forEach(topic => {
+        const option = document.createElement('option');
+        option.value = topic.value;
+        option.textContent = `${topic.icon} ${topic.label}`;
+        option.className = 'bg-slate-800';
+        select.appendChild(option);
+      });
+      
+      setTimeout(() => {
+        document.getElementById('step-2').classList.remove('hidden');
+        document.getElementById('step-2').scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+
+    function selectTopic(topic) {
+      if (!topic) return;
+      currentDuel.topic = topic;
+      
+      setTimeout(() => {
+        document.getElementById('step-3').classList.remove('hidden');
+        document.getElementById('step-3').scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+
+    function selectOpponent(type) {
+      currentDuel.opponentType = type;
+      
+      if (type === 'friend') {
+        document.getElementById('friend-input').classList.remove('hidden');
+      } else {
+        document.getElementById('friend-input').classList.add('hidden');
+        currentDuel.opponentName = opponentNames[Math.floor(Math.random() * opponentNames.length)];
+        startMatchmaking();
+      }
+    }
+
+    // ========== Matchmaking ==========
+    function startMatchmaking() {
+      if (currentDuel.opponentType === 'friend') {
+        const friendInput = document.getElementById('friend-username').value.trim();
+        if (!friendInput) {
+          showToast('Please enter a username or email', 'error');
+          return;
+        }
+        currentDuel.opponentName = friendInput.split('@')[0] || friendInput;
+      }
+      
+      hideAllViews();
+      document.getElementById('view-matchmaking').classList.remove('hidden');
+      
+      const statuses = [
+        'Searching for worthy challengers...',
+        'Found potential opponent!',
+        'Verifying skill level...',
+        'Match found! Preparing arena...'
+      ];
+      
+      let statusIndex = 0;
+      const statusInterval = setInterval(() => {
+        statusIndex++;
+        if (statusIndex < statuses.length) {
+          document.getElementById('matchmaking-status').textContent = statuses[statusIndex];
+        } else {
+          clearInterval(statusInterval);
+          startDuel();
+        }
+      }, 800);
+    }
+
+    // ========== Duel ==========
+    function startDuel() {
+      hideAllViews();
+      document.getElementById('view-duel').classList.remove('hidden');
+      
+      document.getElementById('opponent-name-display').textContent = currentDuel.opponentName;
+      document.getElementById('opponent-avatar').textContent = currentDuel.opponentName.charAt(0).toUpperCase();
+      
+      const topicInfo = topics[currentDuel.type].find(t => t.value === currentDuel.topic);
+      document.getElementById('duel-topic-display').textContent = topicInfo ? topicInfo.label : currentDuel.topic;
+      document.getElementById('duel-type-display').textContent = currentDuel.type === 'coding' ? '💻 Coding' : '🎨 Design';
+      
+      if (currentDuel.type === 'coding') {
+        document.getElementById('coding-editor').classList.remove('hidden');
+        document.getElementById('design-canvas').classList.add('hidden');
+        const challengeList = challenges.coding[currentDuel.topic] || challenges.coding['algorithms'];
+        const challenge = challengeList[Math.floor(Math.random() * challengeList.length)];
+        document.getElementById('challenge-text').textContent = challenge;
+        document.getElementById('code-input').value = '';
+        document.getElementById('output-text').textContent = 'Ready to run...';
+      } else {
+        document.getElementById('coding-editor').classList.add('hidden');
+        document.getElementById('design-canvas').classList.remove('hidden');
+        const briefList = challenges.design[currentDuel.topic] || challenges.design['ui-design'];
+        const brief = briefList[Math.floor(Math.random() * briefList.length)];
+        document.getElementById('design-text').textContent = brief;
+        clearCanvas();
+      }
+      
+      timeRemaining = 600;
+      updateTimerDisplay();
+      startTimer();
+      simulateAIScoring();
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          submitSolution();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById('timer-display').textContent = display;
+      
+      if (timeRemaining <= 60) {
+        document.getElementById('timer-display').classList.add('animate-pulse');
+      }
+    }
+
+    function simulateAIScoring() {
+      const scoreInterval = setInterval(() => {
+        if (document.getElementById('view-duel').classList.contains('hidden')) {
+          clearInterval(scoreInterval);
+          return;
+        }
+        
+        const input = currentDuel.type === 'coding' 
+          ? document.getElementById('code-input').value 
+          : 'canvas';
+        
+        if (input.length > 10 || currentDuel.type === 'design') {
+          currentScores.logic = Math.min(100, currentScores.logic + Math.random() * 5);
+          currentScores.speed = Math.min(100, (600 - timeRemaining) / 6);
+          currentScores.creativity = Math.min(100, currentScores.creativity + Math.random() * 3);
+          currentScores.optimization = Math.min(100, currentScores.optimization + Math.random() * 4);
+          
+          updateScoreDisplay();
+        }
+      }, 2000);
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('score-logic').textContent = Math.round(currentScores.logic);
+      document.getElementById('score-speed').textContent = Math.round(currentScores.speed);
+      document.getElementById('score-creativity').textContent = Math.round(currentScores.creativity);
+      document.getElementById('score-optimization').textContent = Math.round(currentScores.optimization);
+      
+      document.getElementById('bar-logic').style.width = `${currentScores.logic}%`;
+      document.getElementById('bar-speed').style.width = `${currentScores.speed}%`;
+      document.getElementById('bar-creativity').style.width = `${currentScores.creativity}%`;
+      document.getElementById('bar-optimization').style.width = `${currentScores.optimization}%`;
+      
+      const total = Math.round((currentScores.logic + currentScores.speed + currentScores.creativity + currentScores.optimization) / 4);
+      document.getElementById('current-score').textContent = total;
+    }
+
+    // ========== Code Execution ==========
+    function runCode() {
+      const code = document.getElementById('code-input').value;
+      const outputEl = document.getElementById('output-text');
+      
+      try {
+        let output = [];
+        const mockConsole = {
+          log: (...args) => output.push(args.map(a => JSON.stringify(a)).join(' ')),
+          error: (...args) => output.push('Error: ' + args.join(' '))
+        };
+        
+        const fn = new Function('console', code);
+        fn(mockConsole);
+        
+        outputEl.textContent = output.length > 0 ? output.join('\n') : 'Code executed successfully (no output)';
+        outputEl.className = 'text-sm text-green-400 font-mono whitespace-pre-wrap';
+        
+        currentScores.logic += 10;
+        currentScores.optimization += 5;
+        updateScoreDisplay();
+      } catch (e) {
+        outputEl.textContent = `Error: ${e.message}`;
+        outputEl.className = 'text-sm text-red-400 font-mono';
+      }
+    }
+
+    // ========== Canvas Drawing ==========
+    let canvas, ctx;
+    let isDrawing = false;
+    let currentTool = 'brush';
+
+    function initCanvas() {
+      canvas = document.getElementById('drawing-canvas');
+      if (!canvas) return;
+      
+      ctx = canvas.getContext('2d');
+      canvas.width = canvas.offsetWidth;
+      canvas.height = 400;
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      
+      canvas.addEventListener('touchstart', handleTouch);
+      canvas.addEventListener('touchmove', handleTouch);
+      canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      draw(e);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      ctx.lineWidth = document.getElementById('brush-size').value;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : document.getElementById('brush-color').value;
+      
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      ctx.beginPath();
+    }
+
+    function handleTouch(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.getElementById('tool-brush').className = tool === 'brush' ? 'px-3 py-1 bg-indigo-600 rounded text-xs' : 'px-3 py-1 bg-slate-700 rounded text-xs';
+      document.getElementById('tool-eraser').className = tool === 'eraser' ? 'px-3 py-1 bg-indigo-600 rounded text-xs' : 'px-3 py-1 bg-slate-700 rounded text-xs';
+    }
+
+    function clearCanvas() {
+      if (!ctx) return;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // ========== Submit Solution ==========
+    async function submitSolution() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      const userScore = Math.round((currentScores.logic + currentScores.speed + currentScores.creativity + currentScores.optimization) / 4);
+      const opponentScore = Math.round(40 + Math.random() * 50);
+      const result = userScore >= opponentScore ? 'win' : 'lose';
+      
+      let badgeEarned = null;
+      const wins = duelHistory.filter(d => d.result === 'win').length;
+      
+      if (result === 'win') {
+        if (wins === 0) badgeEarned = 'first-win';
+        else if (userScore >= 90) badgeEarned = 'perfect-score';
+        else if (timeRemaining > 300) badgeEarned = 'speed-demon';
+        
+        const recentWins = duelHistory.slice(-2).filter(d => d.result === 'win').length;
+        if (recentWins === 2) badgeEarned = 'streak-3';
+        
+        const codingWins = duelHistory.filter(d => d.result === 'win' && d.challengeType === 'coding').length;
+        const designWins = duelHistory.filter(d => d.result === 'win' && d.challengeType === 'design').length;
+        if (currentDuel.type === 'coding' && codingWins === 4) badgeEarned = 'code-master';
+        if (currentDuel.type === 'design' && designWins === 4) badgeEarned = 'design-guru';
+      }
+      
+      const scoreLevel = userScore >= 80 ? 'high' : (userScore >= 50 ? 'medium' : 'low');
+      const suggestionList = aiSuggestionTemplates[currentDuel.type][scoreLevel];
+      const suggestions = suggestionList.slice(0, 3).join('|');
+      
+      if (window.dataSdk && duelHistory.length < 999) {
+        const duelRecord = {
+          id: Date.now().toString(),
+          date: new Date().toISOString(),
+          challengeType: currentDuel.type,
+          topic: currentDuel.topic,
+          opponentType: currentDuel.opponentType,
+          opponentName: currentDuel.opponentName,
+          userScore: userScore,
+          opponentScore: opponentScore,
+          logicScore: Math.round(currentScores.logic),
+          speedScore: Math.round(currentScores.speed),
+          creativityScore: Math.round(currentScores.creativity),
+          optimizationScore: Math.round(currentScores.optimization),
+          result: result,
+          badgeEarned: badgeEarned || '',
+          aiSuggestions: suggestions
+        };
+        
+        const createResult = await window.dataSdk.create(duelRecord);
+        if (!createResult.isOk) {
+          console.error('Failed to save duel result');
+        }
+      }
+      
+      showResults(userScore, opponentScore, result, badgeEarned, suggestions);
+    }
+
+    function showResults(userScore, opponentScore, result, badgeEarned, suggestions) {
+      hideAllViews();
+      document.getElementById('view-results').classList.remove('hidden');
+      
+      if (result === 'win') {
+        document.getElementById('result-icon').textContent = '🏆';
+        document.getElementById('result-title').textContent = 'Victory!';
+        document.getElementById('result-title').className = 'text-3xl font-bold mb-2 text-green-400';
+        document.getElementById('result-subtitle').textContent = 'You dominated the arena!';
+      } else {
+        document.getElementById('result-icon').textContent = '😤';
+        document.getElementById('result-title').textContent = 'Defeat';
+        document.getElementById('result-title').className = 'text-3xl font-bold mb-2 text-rose-400';
+        document.getElementById('result-subtitle').textContent = 'A worthy opponent! Try again?';
+      }
+      
+      document.getElementById('result-user-score').textContent = userScore;
+      document.getElementById('result-opponent-score').textContent = opponentScore;
+      document.getElementById('result-opponent-name').textContent = currentDuel.opponentName;
+      document.getElementById('result-opponent-avatar').textContent = currentDuel.opponentName.charAt(0).toUpperCase();
+      
+      document.getElementById('breakdown-logic').textContent = Math.round(currentScores.logic);
+      document.getElementById('breakdown-speed').textContent = Math.round(currentScores.speed);
+      document.getElementById('breakdown-creativity').textContent = Math.round(currentScores.creativity);
+      document.getElementById('breakdown-optimization').textContent = Math.round(currentScores.optimization);
+      
+      if (badgeEarned && badges[badgeEarned]) {
+        document.getElementById('badge-section').classList.remove('hidden');
+        document.getElementById('badge-icon').textContent = badges[badgeEarned].icon;
+        document.getElementById('badge-name').textContent = badges[badgeEarned].name;
+      } else {
+        document.getElementById('badge-section').classList.add('hidden');
+      }
+      
+      const suggestionList = suggestions.split('|');
+      const suggestionsHtml = suggestionList.map(s => `
+        <li class="flex items-start gap-2">
+          <span class="text-indigo-400">•</span>
+          <span>${s}</span>
+        </li>
+      `).join('');
+      document.getElementById('ai-suggestions').innerHTML = suggestionsHtml;
+    }
+
+    // ========== Stats & Leaderboard ==========
+    function updateStats() {
+      const totalDuels = duelHistory.length;
+      const wins = duelHistory.filter(d => d.result === 'win').length;
+      const uniqueBadges = new Set(duelHistory.filter(d => d.badgeEarned).map(d => d.badgeEarned)).size;
+      
+      let streak = 0;
+      for (let i = duelHistory.length - 1; i >= 0; i--) {
+        if (duelHistory[i].result === 'win') streak++;
+        else break;
+      }
+      
+      document.getElementById('stat-duels').textContent = totalDuels;
+      document.getElementById('stat-wins').textContent = wins;
+      document.getElementById('stat-streak').textContent = streak;
+      document.getElementById('stat-badges').textContent = uniqueBadges;
+    }
+
+    function renderLeaderboard() {
+      const leaderboard = document.getElementById('leaderboard');
+      
+      if (duelHistory.length === 0) {
+        leaderboard.innerHTML = `
+          <div class="text-center py-8 text-slate-500">
+            <p>No duels completed yet. Be the first!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const scores = {};
+      duelHistory.forEach(duel => {
+        if (!scores['You']) scores['You'] = { wins: 0, totalScore: 0, duels: 0 };
+        scores['You'].duels++;
+        scores['You'].totalScore += duel.userScore;
+        if (duel.result === 'win') scores['You'].wins++;
+        
+        if (!scores[duel.opponentName]) scores[duel.opponentName] = { wins: 0, totalScore: 0, duels: 0 };
+        scores[duel.opponentName].duels++;
+        scores[duel.opponentName].totalScore += duel.opponentScore;
+        if (duel.result === 'lose') scores[duel.opponentName].wins++;
+      });
+      
+      const sorted = Object.entries(scores)
+        .map(([name, data]) => ({
+          name,
+          avgScore: Math.round(data.totalScore / data.duels),
+          wins: data.wins,
+          duels: data.duels
+        }))
+        .sort((a, b) => b.avgScore - a.avgScore)
+        .slice(0, 10);
+      
+      const rankColors = ['text-amber-400', 'text-slate-300', 'text-amber-600'];
+      const rankIcons = ['🥇', '🥈', '🥉'];
+      
+      leaderboard.innerHTML = sorted.map((entry, index) => `
+        <div class="flex items-center justify-between p-3 rounded-lg ${entry.name === 'You' ? 'bg-indigo-500/20 border border-indigo-500/30' : 'bg-slate-800/50'} hover:bg-slate-700/50 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="w-8 text-center ${index < 3 ? rankColors[index] : 'text-slate-500'} font-bold">
+              ${index < 3 ? rankIcons[index] : index + 1}
+            </span>
+            <span class="font-medium ${entry.name === 'You' ? 'text-indigo-400' : ''}">${entry.name}</span>
+          </div>
+          <div class="flex items-center gap-4 text-sm">
+            <span class="text-slate-400">${entry.wins}W/${entry.duels - entry.wins}L</span>
+            <span class="font-bold ${entry.name === 'You' ? 'text-indigo-400' : 'text-white'}">${entry.avgScore} pts</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderDuelHistory() {
+      const historyEl = document.getElementById('duel-history');
+      
+      if (duelHistory.length === 0) {
+        historyEl.innerHTML = `
+          <div class="text-center py-8 text-slate-500">
+            <p>No duel history yet. Start your first duel!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const recentDuels = [...duelHistory].reverse().slice(0, 10);
+      
+      historyEl.innerHTML = recentDuels.map(duel => {
+        const date = new Date(duel.date);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const topicInfo = topics[duel.challengeType]?.find(t => t.value === duel.topic);
+        const topicLabel = topicInfo ? topicInfo.label : duel.topic;
+        const typeIcon = duel.challengeType === 'coding' ? '💻' : '🎨';
+        
+        return `
+          <div class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors">
+            <div class="flex items-center gap-4">
+              <span class="text-2xl">${typeIcon}</span>
+              <div>
+                <div class="font-medium">${topicLabel}</div>
+                <div class="text-xs text-slate-400">vs ${duel.opponentName} • ${dateStr}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="text-right">
+                <div class="font-bold ${duel.result === 'win' ? 'text-green-400' : 'text-rose-400'}">${duel.userScore} - ${duel.opponentScore}</div>
+                <div class="text-xs ${duel.result === 'win' ? 'text-green-400' : 'text-rose-400'}">${duel.result === 'win' ? 'Victory' : 'Defeat'}</div>
+              </div>
+              ${duel.badgeEarned && badges[duel.badgeEarned] ? `<span class="text-2xl" title="${badges[duel.badgeEarned].name}">${badges[duel.badgeEarned].icon}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========== Toast Notification ==========
+    function showToast(message, type = 'info') {
+      const existing = document.querySelector('.toast-notification');
+      if (existing) existing.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast-notification fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 ${type === 'error' ? 'bg-rose-600' : 'bg-indigo-600'} text-white font-medium animate-float`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Initialize on load
+    initialize();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d0c7bfae5639788',t:'MTc3MTU3NDU3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
